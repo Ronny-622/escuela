@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Escuela - Control de Aulas y Estudiantes</title>
+  <title>Escuela - Control de Secciones y Estudiantes</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -142,7 +142,7 @@
 <body>
   <div id="loginPage" class="container login-box">
     <h1>Login Administrador</h1>
-    <p>Solo los administradores autorizados pueden acceder a la gestión de aulas.</p>
+    <p>Solo los administradores autorizados pueden acceder a la gestión de secciones.</p>
 
     <label for="usuario">Usuario</label>
     <input type="text" id="usuario" />
@@ -173,15 +173,15 @@
   </div>
 
   <div id="adminPage" class="container hidden">
-    <h1>Control de aulas y estudiantes</h1>
-    <p>Registra cuántas aulas tiene la escuela y cuántos estudiantes hay en cada una. El total se calcula automáticamente.</p>
+    <h1>Control de secciones y estudiantes</h1>
+    <p>Registra cuántas secciones tiene la escuela y cuántos estudiantes hay en cada una. El total se calcula automáticamente.</p>
 
-    <label for="numAulas">Cantidad de aulas</label>
+    <label for="numAulas">Cantidad de secciones</label>
     <input type="number" id="numAulas" min="0" value="0" />
-    <p class="note">Escribe la cantidad de aulas y luego completa los estudiantes por aula.</p>
+    <p class="note">Escribe la cantidad de secciones y luego completa los estudiantes por sección.</p>
 
     <div id="aulasHeader" class="classroom-item classroom-header hidden">
-      <div>Aula</div>
+      <div>Sección</div>
       <div>Niñas</div>
       <div>Niños</div>
     </div>
@@ -283,17 +283,23 @@
         const aulaDiv = document.createElement('div');
         aulaDiv.className = 'classroom-item';
 
-        const labelAula = document.createElement('div');
-        labelAula.textContent = `Aula ${i}`;
+        const cantidadData = data.estudiantes[i - 1] || { name: `Sección ${i}`, ninas: 0, ninos: 0 };
 
-        const cantidadData = data.estudiantes[i - 1] || { ninas: 0, ninos: 0 };
+        const inputName = document.createElement('input');
+        inputName.type = 'text';
+        inputName.value = cantidadData.name || `Sección ${i}`;
+        inputName.placeholder = 'Nombre sección';
+        inputName.title = 'Nombre de la sección';
+        inputName.addEventListener('input', () => {
+          saveCurrentAulas();
+        });
 
         const inputNinas = document.createElement('input');
         inputNinas.type = 'number';
         inputNinas.min = '0';
         inputNinas.value = Number.isInteger(cantidadData.ninas) ? cantidadData.ninas : 0;
         inputNinas.placeholder = 'Niñas';
-        inputNinas.title = 'Número de niñas en esta aula';
+        inputNinas.title = 'Número de niñas en esta sección';
         inputNinas.addEventListener('input', () => {
           calcularTotal();
           saveCurrentAulas();
@@ -304,13 +310,13 @@
         inputNinos.min = '0';
         inputNinos.value = Number.isInteger(cantidadData.ninos) ? cantidadData.ninos : 0;
         inputNinos.placeholder = 'Niños';
-        inputNinos.title = 'Número de niños en esta aula';
+        inputNinos.title = 'Número de niños en esta sección';
         inputNinos.addEventListener('input', () => {
           calcularTotal();
           saveCurrentAulas();
         });
 
-        aulaDiv.appendChild(labelAula);
+        aulaDiv.appendChild(inputName);
         aulaDiv.appendChild(inputNinas);
         aulaDiv.appendChild(inputNinos);
         aulasContainer.appendChild(aulaDiv);
@@ -325,10 +331,13 @@
       const aulas = aulasContainer.querySelectorAll('.classroom-item');
 
       aulas.forEach((aula) => {
-        const inputs = aula.querySelectorAll('input[type="number"]');
-        const ninas = parseInt(inputs[0].value, 10);
-        const ninos = parseInt(inputs[1].value, 10);
+        const nameInput = aula.querySelector('input[type="text"]');
+        const numberInputs = aula.querySelectorAll('input[type="number"]');
+        const nombre = nameInput ? nameInput.value.trim() : '';
+        const ninas = parseInt(numberInputs[0]?.value, 10);
+        const ninos = parseInt(numberInputs[1]?.value, 10);
         estudiantes.push({
+          name: nombre || undefined,
           ninas: Number.isNaN(ninas) ? 0 : ninas,
           ninos: Number.isNaN(ninos) ? 0 : ninos
         });
@@ -412,8 +421,9 @@
 
       if (cantidad > 0 && !Number.isNaN(cantidad)) {
         for (let i = 0; i < cantidad; i++) {
-          const savedAula = saved.estudiantes[i] || { ninas: 0, ninos: 0 };
+          const savedAula = saved.estudiantes[i] || { name: `Sección ${i + 1}`, ninas: 0, ninos: 0 };
           estudiantes.push({
+            name: savedAula.name || `Sección ${i + 1}`,
             ninas: Number.isInteger(savedAula.ninas) ? savedAula.ninas : 0,
             ninos: Number.isInteger(savedAula.ninos) ? savedAula.ninos : 0
           });
