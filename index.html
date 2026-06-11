@@ -133,6 +133,23 @@
       text-align: center;
       margin-top: 20px;
     }
+    .print-btn {
+      width: 100%;
+      margin-top: 14px;
+      padding: 14px 16px;
+      background: #6f4c98;
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      font-size: 1rem;
+      box-shadow: 0 12px 24px rgba(111, 76, 152, 0.24);
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+    .print-btn:hover {
+      background: #583f7a;
+      transform: translateY(-1px);
+    }
     .note {
       margin-top: 10px;
       color: #805877;
@@ -193,6 +210,7 @@
 
     <div class="logout-box">
       <button id="logoutBtn" class="login-btn" style="background: #dc2626;">Cerrar sesión</button>
+      <button id="printBtn" class="print-btn">Imprimir</button>
     </div>
 
   </div>
@@ -217,6 +235,7 @@
     const numAulasInput = document.getElementById('numAulas');
     const aulasContainer = document.getElementById('aulasContainer');
     const totalEstudiantesSpan = document.getElementById('totalEstudiantes');
+    const printBtn = document.getElementById('printBtn');
 
     const adminCredentialsKey = 'escuelaAdminCredentials';
     const authKey = 'escuelaAdminLogged';
@@ -481,6 +500,7 @@
       if (event.key === 'Enter') login();
     });
     numAulasInput.addEventListener('input', actualizarAulas);
+    printBtn.addEventListener('click', () => window.print());
     window.addEventListener('load', checkAuth);
   </script>
 </body>
