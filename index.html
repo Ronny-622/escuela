@@ -126,6 +126,34 @@
       color: #8f3c72;
       font-size: 1.05rem;
     }
+    .page-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .date-field {
+      text-align: right;
+      min-width: 220px;
+    }
+    .date-field label {
+      display: block;
+      font-size: 0.95rem;
+      margin-bottom: 6px;
+      color: #7d4f76;
+      font-weight: 700;
+    }
+    .date-field input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #ebd5e8;
+      border-radius: 12px;
+      background: #fff7ff;
+      color: #5b3d61;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
     .hidden {
       display: none;
     }
@@ -190,8 +218,16 @@
   </div>
 
   <div id="adminPage" class="container hidden">
-    <h1>Control de secciones y estudiantes</h1>
-    <p>Registra cuántas secciones tiene la escuela y cuántos estudiantes hay en cada una. El total se calcula automáticamente.</p>
+    <div class="page-header">
+      <div>
+        <h1>Control de secciones y estudiantes</h1>
+        <p>Registra cuántas secciones tiene la escuela y cuántos estudiantes hay en cada una. El total se calcula automáticamente.</p>
+      </div>
+      <div class="date-field">
+        <label for="yearInput">Año</label>
+        <input type="number" id="yearInput" min="1900" max="2099" placeholder="2026" />
+      </div>
+    </div>
 
     <label for="numAulas">Cantidad de secciones</label>
     <input type="number" id="numAulas" min="0" value="0" />
@@ -233,6 +269,7 @@
     const recoverSubmitBtn = document.getElementById('recoverSubmitBtn');
     const recoveryMessage = document.getElementById('recoveryMessage');
     const numAulasInput = document.getElementById('numAulas');
+    const yearInput = document.getElementById('yearInput');
     const aulasContainer = document.getElementById('aulasContainer');
     const totalEstudiantesSpan = document.getElementById('totalEstudiantes');
     const printBtn = document.getElementById('printBtn');
@@ -268,17 +305,18 @@
     function getSavedAulas() {
       const saved = localStorage.getItem(storageKey);
       if (!saved) {
-        return { numAulas: 0, estudiantes: [] };
+        return { numAulas: 0, year: '', estudiantes: [] };
       }
 
       try {
         const parsed = JSON.parse(saved);
         return {
           numAulas: Number.isInteger(parsed.numAulas) ? parsed.numAulas : 0,
+          year: parsed.year || '',
           estudiantes: Array.isArray(parsed.estudiantes) ? parsed.estudiantes : []
         };
       } catch {
-        return { numAulas: 0, estudiantes: [] };
+        return { numAulas: 0, year: '', estudiantes: [] };
       }
     }
 
@@ -290,6 +328,7 @@
       const cantidad = Math.max(0, Number(data.numAulas) || 0);
       const aulasHeader = document.getElementById('aulasHeader');
       numAulasInput.value = cantidad;
+      yearInput.value = data.year || '';
       aulasContainer.innerHTML = '';
 
       if (cantidad > 0) {
